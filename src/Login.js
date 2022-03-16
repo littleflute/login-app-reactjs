@@ -12,13 +12,20 @@ function Login(props) {
   const handleLogin = () => {
     setError(null);
     setLoading(true);
-    axios.post('http://localhost:4000/users/signin', { username: username.value, password: password.value }).then(response => {
+    axios.post('http://localhost:8080/api/adminSignIn', 
+      { AdminName: username.value, Password: password.value }
+    ).then(response => {
       setLoading(false);
-      setUserSession(response.data.token, response.data.user);
-      props.history.push('/dashboard');
+      if(response.data.code==1){
+        setUserSession(response.data.token, response.data.userName);
+        props.history.push('/dashboard');
+      }
+      else{
+        setError("wrong name or password.");
+      }
     }).catch(error => {
       setLoading(false);
-      if (error.response.status === 401) setError(error.response.data.message);
+      if (error.response.status === 401) setError(error.response.data.msg);
       else setError("Something went wrong. Please try again later.");
     });
   }
